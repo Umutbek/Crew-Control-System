@@ -25,21 +25,34 @@ SECRET_KEY = 'django-insecure-dq)i)bv6h-tm_ly__a_s9+5sozkovr0mrih%7-a_w^w0n5jbw(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
-INSTALLED_APPS = [
+# Apps that are shared among all tenants (including the public schema)
+SHARED_APPS = [
+    'django_tenants',
+    'users',
+    'tenants',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 
+TENANT_APPS = [
+    'users',
+]
+
+INSTALLED_APPS = SHARED_APPS + [ app for app in TENANT_APPS if app not in SHARED_APPS]
+
+
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,8 +88,12 @@ WSGI_APPLICATION = 'CrewApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django_tenants.postgresql_backend',  # change this
+        'NAME': 'crew_db',
+        'USER': 'crew_user',
+        'PASSWORD': 'crewcontrol2024',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -121,3 +138,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
+
+TENANT_MODEL = "tenants.Tenant" 
+TENANT_DOMAIN_MODEL = "tenants.Domain"
