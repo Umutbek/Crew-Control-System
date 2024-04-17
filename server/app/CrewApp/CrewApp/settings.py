@@ -33,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 # Apps that are shared among all tenants (including the public schema)
 SHARED_APPS = [
     'django_tenants',
-    'users',
     'tenants',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +40,9 @@ SHARED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
+    'rest_framework',
+    'drf_yasg',
 
 ]
 
@@ -62,6 +64,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', 
+    'tenants.backends.EmailBackend'
+]
+
 ROOT_URLCONF = 'CrewApp.urls'
 
 TEMPLATES = [
@@ -79,6 +86,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'CrewApp.wsgi.application'
 
@@ -142,3 +150,5 @@ DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 
 TENANT_MODEL = "tenants.Tenant" 
 TENANT_DOMAIN_MODEL = "tenants.Domain"
+
+AUTH_USER_MODEL = 'tenants.Business'
