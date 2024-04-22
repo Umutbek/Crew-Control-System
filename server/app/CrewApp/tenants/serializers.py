@@ -59,17 +59,12 @@ class LoginSerializer(serializers.Serializer):
                 'A password is required to log in.'
             )
 
-        print("Email", email)
-        print("Password", password)
-
         user = authenticate(
             request = self.context.get('request'),
             username=email,
             password=password,
+            type = 'business',
         )
-
-        print("User", user)
-
 
         if not user:
             msg = ('Email or Password is incorrect')

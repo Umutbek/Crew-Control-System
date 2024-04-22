@@ -27,3 +27,24 @@ class CrewMemberViewSet(viewsets.ModelViewSet):
     """Manage a crew member viewset"""
     serializer_class = serializers.CrewMemberSerializer
     queryset = models.CrewMember.objects.all()
+
+
+class CrewLoginAPI(APIView):
+    """Create a new auth token for business user"""
+    serializer_class = serializers.CrewLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.CrewLoginSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+
+        # Create or retrieve token for the authenticated user
+        token, created = models.CrewToken.objects.get_or_create(user=user)
+
+        # Optionally, serialize user data if needed
+        user_data = serializers.CrewSerializer(user).data
+
+        return Response({
+            'token': token.key,
+            'user': user_data
+        }, status=200)

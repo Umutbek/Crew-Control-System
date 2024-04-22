@@ -38,3 +38,45 @@ class CrewMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CrewMember
         fields = ('id', 'name', 'email', 'phone', 'crew')
+
+
+class CrewLoginSerializer(serializers.Serializer):
+    """Serializer for login"""
+    email = serializers.CharField()
+    password = serializers.CharField(
+        style = {'input_type':'password'}, trim_whitespace=False
+    )
+
+    class Meta:
+        model: models.Crew
+        fields = ('email', 'password')
+
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        if email is None:
+            raise serializers.ValidationError(
+                'A email is required to log in.'
+            )
+        if password is None:
+            raise serializers.ValidationError(
+                'A password is required to log in.'
+            )
+
+        user = authenticate(
+            request = self.context.get('request'),
+            username=email,
+            password=password,
+            backend='users.backends.CrewEmailBackend',
+            type = 'crew',
+        )
+
+        if not user:
+            msg = ('Email or Password is incorrect')
+            raise serializers.ValidationError({'detail': msg}, code='authorization')
+
+        data['user']= user
+
+        return data

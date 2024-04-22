@@ -65,8 +65,8 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend', 
-    'tenants.backends.EmailBackend'
+    'tenants.backends.EmailBackend',
+    'users.backends.CrewEmailBackend'
 ]
 
 ROOT_URLCONF = 'CrewApp.urls'

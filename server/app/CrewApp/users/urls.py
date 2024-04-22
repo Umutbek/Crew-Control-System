@@ -11,6 +11,6 @@ router.register(r'crewmember', views.CrewMemberViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path("login/", views.LoginAPI.as_view()),
+    path("crew_login/", views.CrewLoginAPI.as_view(), name='crew-login'),
 
 ]

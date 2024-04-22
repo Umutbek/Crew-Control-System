@@ -7,6 +7,7 @@ from users import utils
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ValidationError
 from tenants.models import Business
+from rest_framework.authtoken.models import Token
 
 
 class CrewManager(BaseUserManager):
@@ -57,3 +58,19 @@ class CrewMember(models.Model):
         ordering = ('-id',)
         verbose_name = ("Crew member")
         verbose_name_plural = ("Crew Members")
+
+
+class CrewToken(models.Model):
+    key = models.CharField(max_length=40, primary_key=True, unique=True)
+    user = models.ForeignKey('users.Crew', related_name='auth_tokens', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super().save(*args, **kwargs)
+
+    @staticmethod
+    def generate_key():
+        from django.utils.crypto import get_random_string
+        return get_random_string(40)
