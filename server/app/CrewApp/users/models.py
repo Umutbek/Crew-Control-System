@@ -74,3 +74,32 @@ class CrewToken(models.Model):
     def generate_key():
         from django.utils.crypto import get_random_string
         return get_random_string(40)
+
+
+class Customers(models.Model):
+    """Model for customers"""
+    fullname = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+    phone = models.CharField(max_length=20)
+    business_id = models.IntegerField(default=0)
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    zipcode = models.IntegerField(default=0)
+    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+
+    def clean(self):
+        # Validate that the business ID exists
+        if not Business.objects.filter(id=self.business_id).exists():
+            raise ValidationError("Business with the given ID does not exist.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Call the clean method to validate before saving
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = ("Customer")
+        verbose_name_plural = ("Customers")
