@@ -80,3 +80,11 @@ class CrewLoginSerializer(serializers.Serializer):
         data['user']= user
 
         return data
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    """Serializer for customer"""
+    class Meta:
+        model = models.Customers
+        fields = ('id', 'fullname', 'email', 'phone', 'business_id', 'address', 'city',
+                  'state', 'zipcode', 'longitude', 'latitude')

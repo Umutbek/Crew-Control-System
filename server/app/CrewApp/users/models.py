@@ -84,7 +84,6 @@ class Customers(models.Model):
     business_id = models.IntegerField(default=0)
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     zipcode = models.IntegerField(default=0)
     longitude = models.FloatField(null=True, blank=True)
@@ -98,6 +97,9 @@ class Customers(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()  # Call the clean method to validate before saving
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.fullname
 
     class Meta:
         ordering = ('-id',)

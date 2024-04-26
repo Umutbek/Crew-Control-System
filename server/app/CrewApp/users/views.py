@@ -48,3 +48,9 @@ class CrewLoginAPI(APIView):
             'token': token.key,
             'user': user_data
         }, status=200)
+
+
+class CustomerViewSet(viewsets.ModelViewSet):
+    """Manage a customer viewset"""
+    serializer_class = serializers.CustomerSerializer
+    queryset = models.Customers.objects.all()
