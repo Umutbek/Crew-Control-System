@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 from tenants.models import Business
 from rest_framework.authtoken.models import Token
 
-
 class CrewManager(BaseUserManager):
     def create_crew(self, email, password=None, **extra_fields):
         if not email:
@@ -19,7 +18,7 @@ class CrewManager(BaseUserManager):
         business.set_password(password)
         business.save(using=self._db)
         return business
-    
+
 
 class Crew(AbstractBaseUser):
     name = models.CharField(max_length=255)

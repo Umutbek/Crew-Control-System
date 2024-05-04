@@ -48,6 +48,8 @@ urlpatterns = [
     path('documentation/', include(swagger_urlpatterns)),
     path('api/v1/tenants/', include('tenants.urls')),
     path('api/v1/users/', include('users.urls')),
-    path('api/v1/proposal/', include('proposal.urls'))
+    path('api/v1/proposal/', include('proposal.urls')),
+    path('api/v1/schedules/', include('jobschedules.urls'))
+
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

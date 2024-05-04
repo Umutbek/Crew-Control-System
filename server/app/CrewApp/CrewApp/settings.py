@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-dq)i)bv6h-tm_ly__a_s9+5sozkovr0mrih%7-a_w^w0n5jbw(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -48,14 +48,15 @@ SHARED_APPS = [
 
 TENANT_APPS = [
     'users',
-    'proposal'
+    'proposal',
+    'jobschedules'
 ]
 
-INSTALLED_APPS = SHARED_APPS + [ app for app in TENANT_APPS if app not in SHARED_APPS]
+INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware', 
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -149,7 +150,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 
-TENANT_MODEL = "tenants.Tenant" 
+TENANT_MODEL = "tenants.Tenant"
 TENANT_DOMAIN_MODEL = "tenants.Domain"
 
 AUTH_USER_MODEL = 'tenants.Business'
