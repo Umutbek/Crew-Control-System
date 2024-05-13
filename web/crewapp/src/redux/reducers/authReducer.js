@@ -12,7 +12,7 @@ import {
   
   const initialState = {
     token: Cookies.get('crew-control-token') || '',
-    isAuth: false,
+    isAuth: !!Cookies.get('crew-control-token'), // This should initialize isAuth based on token presence
     user: null,
     error: null,
     isUserLoading: true,
