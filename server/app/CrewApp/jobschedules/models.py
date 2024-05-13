@@ -2,43 +2,16 @@ from django.db import models
 import datetime
 from users.models import Crew, Customers
 from proposal.models import Proposal
+from jobschedules import utils
+from django_fsm import FSMIntegerField
 
 
-class OneTimeJob(models.Model):
+class Jobs(models.Model):
     customer = models.ForeignKey(Customers, on_delete=models.CASCADE)
+    crew = models.ForeignKey(Crew, on_delete=models.SET_NULL, null=True)
     job_location = models.CharField(max_length=255, blank=True, null=True)
-    crew = models.ForeignKey(Crew, on_delete=models.SET_NULL, null=True)
-    date = models.DateField()
-    total_man_hours = models.DecimalField(max_digits=5, decimal_places=2)
-    job_ordering = models.PositiveIntegerField(help_text="Order of the job in the day's schedule")
-    instructions_for_crew = models.TextField(blank=True, null=True)
-    files = models.FileField(upload_to='job_files/', blank=True, null=True)
-    proposal = models.ForeignKey(Proposal, on_delete=models.SET_NULL, null=True)
-    isscheduled = models.BooleanField(default=True)
 
-    mow = models.BooleanField(default=False)
-    edge = models.BooleanField(default=False)
-    blow = models.BooleanField(default=False)
-
-    def calculate_gross_revenue(self):
-        total_revenue = 0
-        if self.mow:
-            total_revenue += 50  # Example fixed price for mowing
-        if self.edge:
-            total_revenue += 20  # Example fixed price for edging
-        if self.blow:
-            total_revenue += 15  # Example fixed price for blowing
-
-        return total_revenue
-
-    def __str__(self):
-        return f"Job {self.id} for {self.customer.name} on {self.date}"
-    
-
-class RecurringJob(models.Model):
-    customer = models.ForeignKey(Customers, on_delete=models.CASCADE)
-    crew = models.ForeignKey(Crew, on_delete=models.SET_NULL, null=True)
-    start_date = models.DateField(help_text="The first date the job should start (mm/dd/yyyy)")
+    date = models.DateField(help_text="The first date the job should start (mm/dd/yyyy)")
     day_of_week = models.CharField(max_length=9, choices=[
         ('Monday', 'Monday'),
         ('Tuesday', 'Tuesday'),
@@ -63,7 +36,10 @@ class RecurringJob(models.Model):
 
     instructions_for_crew = models.TextField(blank=True, null=True)
     files = models.FileField(upload_to='recurring_job_files/', blank=True, null=True)
-    isscheduled = models.BooleanField(default=True)
+    status = FSMIntegerField(choices=utils.JobStatus.choices, default=utils.JobStatus.SCHEDULED)
+    job_type = FSMIntegerField(choices=utils.JobType.choices, default=utils.JobType.ONETIME)
+
+    proposal = models.ForeignKey(Proposal, on_delete=models.SET_NULL, null=True)
 
     mow = models.BooleanField(default=False)
     edge = models.BooleanField(default=False)
@@ -96,4 +72,4 @@ class RecurringJob(models.Model):
         return total_revenue
 
     def __str__(self):
-        return f"Recurring Job for {self.customer.name}, starts on {self.start_date}, every {self.frequency}"
+        return f"Job for {self.customer.name}, starts on {self.date}"

@@ -1,24 +1,11 @@
 from rest_framework import viewsets
-from .models import OneTimeJob, RecurringJob
-from .serializers import OneTimeJobSerializer, RecurringJobSerializer
+from .models import Jobs
+from .serializers import JobsSerializer
 
 
-class OneTimeJobViewSet(viewsets.ModelViewSet):
-    queryset = OneTimeJob.objects.all()
-    serializer_class = OneTimeJobSerializer
-
-    def get_queryset(self):
-        # Filtering by date
-        queryset = super().get_queryset()
-        date_param = self.request.query_params.get('date', None)
-        if date_param:
-            queryset = queryset.filter(date=date_param)
-        return queryset
-
-
-class RecurringJobViewSet(viewsets.ModelViewSet):
-    queryset = RecurringJob.objects.all()
-    serializer_class = RecurringJobSerializer
+class JobsViewSet(viewsets.ModelViewSet):
+    queryset = Jobs.objects.all()
+    serializer_class = JobsSerializer
 
     def get_queryset(self):
         # Filtering by frequency
