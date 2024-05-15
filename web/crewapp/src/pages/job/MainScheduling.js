@@ -1,111 +1,130 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import DateNavigator from "../../components/DateNavigator";
-import WeekChange from "../../components/WeekChange";
 
 import { DragDropContext } from "react-beautiful-dnd";
 import KanbanHorizontal from "./KanbanHorizontal";
 import KanbanVertical from "./KanbanVertical";
-import { columnsFromBackend, unscheduled } from "./KanbanData";
+import { columnsFromBack, unscheduled } from "./KanbanData";
 import styled from "@emotion/styled";
 import ServerService from "../../services/ServerService"; // Adjust the import path as needed
 
-import ServerServiceContext from "../../contexts/ServerServiceContext"
 import { v4 as uuidv4 } from "uuid";
+import WeekChange, { useWeekChange } from "../../components/WeekChange";
+import { format, startOfWeek, endOfWeek, addWeeks, parseISO, isWithinInterval, startOfDay } from 'date-fns';
+import { WeekChangeContext } from '../../components/WeekChange'; // Ensure the path is correct
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { Box, Button, Typography, IconButton, Dialog, MenuItem, FormControl, Select, InputLabel } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
 
 
 const KanbanContainer = styled("div")(() => ({
   display: "flex",
   flexDirection: "column",
-  gap: "20px"  // Adjust this value to manage space between horizontal and vertical components
+  gap: "20px"
+
 }));
 
-const columnsFromBack = {
-  'Monday': {
-    title: 'Monday',
-    items: [],
-  },
-  'Tuesday': {
-    title: 'Tuesday',
-    items: [],
-  },
-  'Wednesday': {
-    title: 'Wednesday',
-    items: [],
-  },
-  'Thursday': {
-    title: 'Thursday',
-    items: [],
-  },
-};
+const Container = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "16px",
+  width: "100%"
+});
 
+const StyledTypography = styled(Typography)({
+  fontSize: "1.5rem",
+  margin: "0 200px"
+});
 
-const fetchJobsData = async () => {
-  const response = await ServerService.getJobs();
-  
-  if (!response.hasError) {
-    return response.data.map(job => {
-      // Manually parsing the date string "yyyy/mm/dd"
-      const dateParts = job.date.replace(/[^0-9]/g, '-').split('-').map(part => parseInt(part));
-      
-      if (dateParts.length === 3) {
-        // Create a Date object using UTC values. Months in JS are 0-indexed.
-        const jobDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
-        
-        return {
-          id: uuidv4(),
-          customer: job.customer_data.fullname,
-          address: job.customer_data.address,
-          dayofWeek: job.day_of_week,
-          grossRevenue: job.gross_revenue,
-          jobordering: job.job_ordering,
-          totalmanhours: job.total_man_hours,
-          instruction: job.instructions_for_crew,
-          status: job.status,
-          date: job.date,
-          startday: jobDate.toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' }),
-        };
-      } else {
-        console.error("Invalid date format:", job.date);
-        return null; // Handle or return error
-      }
-    }).filter(job => job !== null);  // Filter out any jobs that resulted in errors
-  } else {
-    console.error("Failed to fetch jobs:", response.data);
-    return [];
-  }
-};
+const StyledIconButton = styled(IconButton)({
+  color: 'black',
+});
 
 
 const KanbanBoard = () => {
-  // State to track columns for both horizontal and vertical Kanban boards
-  const [columns, setColumns] = useState({ vertical: columnsFromBack, horizontal: unscheduled });
+
+  const [columns, setColumns] = useState({
+    vertical: { ...columnsFromBack },
+    horizontal: unscheduled
+  });
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentWeekEnd, setCurrentWeekEnd] = useState(() => endOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [crews, setCrews] = React.useState([]);
+  const [selectedCrew, setSelectedCrew] = React.useState('');
+
+  useEffect(() => {
+
+    const fetchCrewsData = async () => {
+      try {
+        const response = await ServerService.fetchCrews();
+        setCrews(response.data); 
+        if (response.data.length > 0) {
+          setSelectedCrew(response.data[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to fetch crews:', error);
+      }
+    };
+    fetchCrewsData();
+  }, []);
 
 
   useEffect(() => {
-    const initializeJobs = async () => {
-      const jobItems = await fetchJobsData();
-      const newColumns = { ...columns.vertical };
 
-      console.log("NewColumns", newColumns)
+    console.log("Yes suchki", selectedCrew)
+    async function fetchJobsData() {
+      const response = await ServerService.getJobs(currentWeekStart, currentWeekEnd, selectedCrew);
+      if (!response.hasError) {
+        // Start with a fresh structure that includes all weekdays
+        const newColumns = { ...columnsFromBack }; 
+        Object.keys(newColumns).forEach(day => {
+          newColumns[day].items = []; // Clear existing items for each day
+        });
 
-      jobItems.forEach(job => {
-        const day = job.startday; // Day of the week from job date
-        if (newColumns[day]) {
-          newColumns[day].items.push(job);
-        }
-      });
-      console.log("NewColumns updated", newColumns)
+        response.data.forEach(job => {
+          const jobDate = startOfDay(parseISO(job.date));
+          const day = jobDate.toLocaleString('en-US', { weekday: 'long', timeZone: 'UTC' });
 
-      setColumns(prev => ({
-        ...prev,
-        vertical: newColumns
-      }));
-    };
-    
+          newColumns[day].items.push({
+            id: uuidv4(),
+            customer: job.customer_data.fullname,
+            address: job.customer_data.address,
+            dayofWeek: job.day_of_week,
+            grossRevenue: job.gross_revenue,
+            jobordering: job.job_ordering,
+            totalmanhours: job.total_man_hours,
+            instruction: job.instructions_for_crew,
+            status: job.status,
+            date: job.date,
+            startday: day
+          });
+        });
 
-    initializeJobs();
-  }, []);
+        // Ensure that all days, including those without jobs, are maintained in the state
+        setColumns({ vertical: newColumns, horizontal: unscheduled });
+      } else {
+        console.error("Failed to fetch jobs:", response.data);
+      }
+    }
+
+    fetchJobsData();
+  }, [currentWeekStart, currentWeekEnd, selectedCrew]);
+
+
+  const handleWeekChange = (direction) => {
+    setCurrentWeekStart(prev => {
+      const newStart = addWeeks(prev, direction === 'next' ? 1 : -1);
+      setCurrentWeekEnd(endOfWeek(newStart, { weekStartsOn: 1 }));
+      return newStart;
+    });
+  };
+
+  const formattedWeek = `${format(currentWeekStart, 'MMM dd')} – ${format(currentWeekEnd, 'MMM dd')}`;
+
 
   const onDragEnd = (result) => {
     const { source, destination } = result;
@@ -165,8 +184,40 @@ const KanbanBoard = () => {
   return (
     <>
       <Navbar />
-      <DateNavigator />
-      <WeekChange />
+
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
+        <Box>
+          <FormControl size="small" sx={{ minWidth: 120, marginRight: 2 }}>
+            <InputLabel id="crew-select-label">Crew</InputLabel>
+            <Select
+              labelId="crew-select-label"
+              id="crew-select"
+              value={selectedCrew}
+              label="Crew"
+              onChange={(e) => setSelectedCrew(e.target.value)}
+              >
+              {crews.map((crew) => (
+                <MenuItem key={crew.id} value={crew.id}>
+                  {crew.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <Box>
+          <Button startIcon={<AddIcon />} variant="contained">Add Single Job</Button>
+          <Button startIcon={<AddIcon />} variant="contained" sx={{ ml: 1 }}>Add Recurring Job</Button>
+        </Box>
+      </Box>
+      <Container>
+        <StyledIconButton onClick={() => handleWeekChange('prev')}>
+          <ArrowBackIosIcon />
+        </StyledIconButton>
+        <StyledTypography>{formattedWeek}</StyledTypography>
+        <StyledIconButton onClick={() => handleWeekChange('next')}>
+          <ArrowForwardIosIcon />
+        </StyledIconButton>
+      </Container>
       <DragDropContext onDragEnd={onDragEnd}>
         <KanbanContainer>
           <KanbanHorizontal columns={columns.horizontal} />

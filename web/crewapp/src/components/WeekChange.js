@@ -1,56 +1,69 @@
-import * as React from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { Typography, IconButton } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styled from '@emotion/styled';
-import { format, addDays, startOfWeek, endOfWeek } from 'date-fns';  // date-fns is used for date calculations
-
+import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
 
 const Container = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '16px',  // You can adjust padding as needed
+  padding: '16px',
   width: '100%'
 });
 
 const StyledTypography = styled(Typography)({
-  fontSize: '1.5rem',  // Larger text
-  margin: '0 200px'  // Space between the arrows and the text
+  fontSize: '1.5rem',
+  margin: '0 200px'
 });
 
 const StyledIconButton = styled(IconButton)({
-  color: 'black',  // Sets the icon color
+  color: 'black',
 });
 
-const WeekChange = () => {
-  const [currentWeek, setCurrentWeek] = React.useState(() => {
-    const now = new Date();
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 });  // Configured to start the week on Monday
-    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
-    return `${format(weekStart, 'MMM dd')} – ${format(weekEnd, 'MMM dd')}`;
-  });
+// Initialize the context with a default value
+export const WeekChangeContext = createContext({
+  currentWeekStart: startOfWeek(new Date(), { weekStartsOn: 1 }),
+  currentWeekEnd: endOfWeek(new Date(), { weekStartsOn: 1 })
+});
+
+export const useWeekChange = () => {
+  const context = useContext(WeekChangeContext);
+  if (!context) {
+    throw new Error('useWeekChange must be used within a WeekChangeProvider');
+  }
+  return context;
+};
+
+const WeekChange = ({ children }) => {
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+
+  const currentWeekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
 
   const handleWeekChange = (direction) => {
-    setCurrentWeek(prevWeek => {
-      const [start, end] = prevWeek.split(' – ');
-      const startDate = new Date(start);
-      const newStartDate = direction === 'next' ? addDays(startDate, 7) : addDays(startDate, -7);
-      const newEndDate = direction === 'next' ? addDays(newStartDate, 6) : addDays(newStartDate, 6);
-      return `${format(newStartDate, 'MMM dd')} – ${format(newEndDate, 'MMM dd')}`;
-    });
+    setCurrentWeekStart(prev => {
+      const newStart = addWeeks(prev, direction === 'next' ? 1 : -1);
+      console.log("Updated Week Start:", newStart);
+      return newStart;
+    });  
   };
 
+  const formattedWeek = `${format(currentWeekStart, 'MMM dd')} – ${format(currentWeekEnd, 'MMM dd')}`;
+
   return (
-    <Container>
-      <StyledIconButton onClick={() => handleWeekChange('prev')}>
-        <ArrowBackIosIcon />
-      </StyledIconButton>
-      <StyledTypography>{currentWeek}</StyledTypography>
-      <StyledIconButton onClick={() => handleWeekChange('next')}>
-        <ArrowForwardIosIcon />
-      </StyledIconButton>
-    </Container>
+    <WeekChangeContext.Provider value={{ currentWeekStart, currentWeekEnd }}>
+      <Container>
+        <StyledIconButton onClick={() => handleWeekChange('prev')}>
+          <ArrowBackIosIcon />
+        </StyledIconButton>
+        <StyledTypography>{formattedWeek}</StyledTypography>
+        <StyledIconButton onClick={() => handleWeekChange('next')}>
+          <ArrowForwardIosIcon />
+        </StyledIconButton>
+        {children}
+      </Container>
+    </WeekChangeContext.Provider>
   );
 };
 

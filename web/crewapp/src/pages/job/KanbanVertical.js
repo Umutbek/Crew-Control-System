@@ -9,6 +9,8 @@ const Container = styled("div")(() => ({
   display: "flex",
   flexDirection: "row",
   margin: 0,
+  width: "100%",
+  overflowX: "auto", 
 }));
 
 const TaskList = styled("div")(() => ({
@@ -16,14 +18,16 @@ const TaskList = styled("div")(() => ({
   display: "flex",
   flexDirection: "column",
   background: "#d7dce8",
-  minWidth: "341px",
   borderRadius: "5px",
   padding: "15px 15px",
   marginRight: "15px",
+  width: "100%",
+
 }));
 
 const TaskColumnStyles = styled("div")(() => ({
   display: "flex",
+  flexWrap: "nowrap",  // Prevent wrapping of columns
   width: "100%",
   minHeight: "80vh",
 }));

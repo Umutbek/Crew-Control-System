@@ -16,7 +16,6 @@ import { Draggable } from "react-beautiful-dnd";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { styled } from "@mui/system";
 
-
 const statusLabels = {
   1: 'Scheduled',
   2: 'Unscheduled',
@@ -37,21 +36,15 @@ const Heading = styled("div")(() => ({
   fontSize: "16px",
 }));
 
-const rightIconAction = (
-  <>
-    <IconButton>
-      <MoreVertIcon />
-    </IconButton>
-  </>
-);
-
 const TaskCard = ({ item, index }) => {
-
   const label = statusLabels[item.status] || 'Unknown';
   const { background, color } = statusStyles[item.status] || { background: '#EEEEEE', color: '#000000' };
 
-  console.log("Startday", item.startday)
-  console.log("Date", item.date)
+  const rightIconAction = (
+    <IconButton>
+      <MoreVertIcon />
+    </IconButton>
+  );
 
   return (
     <Draggable key={item.id} draggableId={item.id} index={index}>
@@ -62,10 +55,12 @@ const TaskCard = ({ item, index }) => {
           {...provided.dragHandleProps}
         >
           <Card sx={{ minWidth: 175, m: "8px 1px" }}>
-
+            <CardHeader
+              title={<Heading>{item.jobordering}. {item.customer}</Heading>}
+              action={rightIconAction}
+              titleTypographyProps={{ sx: { fontSize: 14, fontWeight: 'bold', color: 'text.primary' } }}
+            />
             <CardContent sx={{ p: "0 16px" }}>
-
-              <Heading>{item.jobordering}. {item.customer} {rightIconAction}</Heading>
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
@@ -80,7 +75,6 @@ const TaskCard = ({ item, index }) => {
               >
                 Estimated man hours: {item.totalmanhours}
               </Typography>
-
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
@@ -88,7 +82,6 @@ const TaskCard = ({ item, index }) => {
               >
                 Instruction: {item.instruction}
               </Typography>
-
               <Typography
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
@@ -96,8 +89,6 @@ const TaskCard = ({ item, index }) => {
               >
                 Amount per visit: {item.grossRevenue} $
               </Typography>
-
-
             </CardContent>
             <CardActions>
               <Chip
@@ -106,8 +97,8 @@ const TaskCard = ({ item, index }) => {
                   m: 1,
                   minWidth: "70px",
                   maxHeight: "25px",
-                  background: "#EEFFF3",
-                  color: "#1CA13E",
+                  background: background,
+                  color: color,
                 }}
                 variant="outlined"
               />
