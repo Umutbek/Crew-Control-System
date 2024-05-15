@@ -35,6 +35,8 @@ SHARED_APPS = [
     'django_tenants',
     'tenants',
     'corsheaders',
+    'django_filters',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,7 +51,9 @@ SHARED_APPS = [
 TENANT_APPS = [
     'users',
     'proposal',
-    'jobschedules'
+    'jobschedules',
+    'django_filters',
+
 ]
 
 INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]

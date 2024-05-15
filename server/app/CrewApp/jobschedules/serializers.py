@@ -20,11 +20,3 @@ class JobsSerializer(serializers.ModelSerializer):
     
     def get_gross_revenue(self, obj):
         return obj.calculate_gross_revenue()
-    
-    def create(self, validated_data):
-        customer_data = validated_data.pop('customer', None)
-        if customer_data:
-            customer = Customers.objects.create(**customer_data)
-            validated_data['customer'] = customer
-        job = Jobs.objects.create(**validated_data)
-        return job

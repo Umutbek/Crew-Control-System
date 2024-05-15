@@ -47,7 +47,7 @@ class Jobs(models.Model):
 
     def next_visit_date(self):
         if not self.last_visit_date:
-            return self.start_date
+            return self.date
         if self.frequency == 'weekly':
             return self.last_visit_date + datetime.timedelta(weeks=1)
         elif self.frequency == 'biweekly':
