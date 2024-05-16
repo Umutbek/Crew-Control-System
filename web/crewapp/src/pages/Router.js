@@ -5,11 +5,12 @@ import PrivateRoute from "../components/PrivateRoute";  // Import the PrivateRou
 import MainScheduling from "./job/MainScheduling";
 
 const LoginPage = lazy(() => import("./auth/LoginPage"));
-const Kanban = lazy(() => import("./job/KanbanVertical"));
-const Manage = lazy(() => import("./manage/Manage"));
+const ManageCustomers = lazy(() => import("./manage/ManageCustomers"));
+const ManageCrew = lazy(() => import("./manage/ManageCrew"));
+const ManageCrewMembers = lazy(() => import("./manage/ManageCrewMembers"));
 const Reports = lazy(() => import('./reports/Reports')); 
 const Billing = lazy(() => import("./billing/Billing"));
-
+const CreateOneTimeJob = lazy(() => import("../components/jobs/CreateOneTimeJob"));
 
 export default function Router() {
   return (
@@ -24,9 +25,21 @@ export default function Router() {
           </PrivateRoute>
         } />
 
-        <Route path="/manage" element={
+        <Route path="/manage-customers" element={
           <PrivateRoute>
-            <Manage />
+            <ManageCustomers />
+          </PrivateRoute>
+        } />
+
+        <Route path="/manage-crew" element={
+          <PrivateRoute>
+            <ManageCrew />
+          </PrivateRoute>
+        } />
+
+        <Route path="/manage-crew-members" element={
+          <PrivateRoute>
+            <ManageCrewMembers />
           </PrivateRoute>
         } />
 
@@ -42,6 +55,12 @@ export default function Router() {
           </PrivateRoute>
         } />
 
+        <Route path="/create-one-time-job" element={
+          <PrivateRoute>
+            <CreateOneTimeJob />
+          </PrivateRoute>
+        } />
+        
       </Routes>
     </Suspense>
   );

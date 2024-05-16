@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import DateNavigator from "../../components/DateNavigator";
 
 import { DragDropContext } from "react-beautiful-dnd";
 import KanbanHorizontal from "./KanbanHorizontal";
@@ -10,14 +9,14 @@ import styled from "@emotion/styled";
 import ServerService from "../../services/ServerService"; // Adjust the import path as needed
 
 import { v4 as uuidv4 } from "uuid";
-import WeekChange, { useWeekChange } from "../../components/WeekChange";
-import { format, startOfWeek, endOfWeek, addWeeks, parseISO, isWithinInterval, startOfDay } from 'date-fns';
-import { WeekChangeContext } from '../../components/WeekChange'; // Ensure the path is correct
+import { format, startOfWeek, endOfWeek, addWeeks, parseISO, startOfDay } from 'date-fns';
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Box, Button, Typography, IconButton, Dialog, MenuItem, FormControl, Select, InputLabel } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
+import CreateOneTimeJob from "../../components/jobs/CreateOneTimeJob"; 
+import CreateRecurringJob from "../../components/jobs/CreateRecurringJob"; 
 
 
 const KanbanContainer = styled("div")(() => ({
@@ -47,6 +46,26 @@ const StyledIconButton = styled(IconButton)({
 
 const KanbanBoard = () => {
 
+  const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
+  const [isCreateRecurringJobOpen, setIsCreateRecurringJobOpen] = useState(false);
+
+  const handleAddSingleJob = () => {
+    setIsCreateJobOpen(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateJobOpen(false); // Close the modal
+  };
+
+  const handleAddRecurringJob = () => {
+    setIsCreateRecurringJobOpen(true); 
+  };
+
+  const handleRecurringCloseModal = () => {
+    setIsCreateRecurringJobOpen(false); 
+  };
+
+
   const [columns, setColumns] = useState({
     vertical: { ...columnsFromBack },
     horizontal: unscheduled
@@ -75,7 +94,6 @@ const KanbanBoard = () => {
 
   useEffect(() => {
 
-    console.log("Yes suchki", selectedCrew)
     async function fetchJobsData() {
       const response = await ServerService.getJobs(currentWeekStart, currentWeekEnd, selectedCrew);
       if (!response.hasError) {
@@ -205,8 +223,8 @@ const KanbanBoard = () => {
           </FormControl>
         </Box>
         <Box>
-          <Button startIcon={<AddIcon />} variant="contained">Add Single Job</Button>
-          <Button startIcon={<AddIcon />} variant="contained" sx={{ ml: 1 }}>Add Recurring Job</Button>
+          <Button startIcon={<AddIcon />} variant="contained" onClick={handleAddSingleJob}>Add Single Job</Button>
+          <Button startIcon={<AddIcon />} variant="contained" onClick={handleAddRecurringJob} sx={{ ml: 1 }}>Add Recurring Job</Button>
         </Box>
       </Box>
       <Container>
@@ -224,6 +242,13 @@ const KanbanBoard = () => {
           <KanbanVertical columns={columns.vertical} />
         </KanbanContainer>
       </DragDropContext>
+      <Dialog open={isCreateJobOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
+        <CreateOneTimeJob onClose={handleCloseModal} />
+      </Dialog>
+
+      <Dialog open={isCreateRecurringJobOpen} onClose={handleRecurringCloseModal} fullWidth maxWidth="md">
+        <CreateRecurringJob onClose={handleRecurringCloseModal} />
+      </Dialog>
     </>
   );
 };
