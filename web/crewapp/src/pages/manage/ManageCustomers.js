@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Typography } from '@mui/material';
+import { Box, Button, Dialog, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import Navbar from "../../components/Navbar/Navbar";
+import CreateCustomers from "../../components/Users/CreateCustomers";
 
 
 const ManageCustomers = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateCustomerOpen, setIsCreateCustomerOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -27,8 +30,13 @@ const ManageCustomers = () => {
     setSearchQuery(event.target.value);
   };
 
+
+  const handleCloseModal = () => {
+    setIsCreateCustomerOpen(false); 
+  };
+
   const handleAddCustomer = () => {
-    navigate('/add-customer');
+    setIsCreateCustomerOpen(true); 
   };
 
 
@@ -110,6 +118,9 @@ const ManageCustomers = () => {
       </TableContainer>
     </Box>
 
+    <Dialog open={isCreateCustomerOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
+        <CreateCustomers onClose={handleCloseModal} />
+    </Dialog>
     </>
   );
 };
