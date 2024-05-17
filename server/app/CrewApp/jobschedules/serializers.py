@@ -11,7 +11,7 @@ class JobsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Jobs
         fields = (
-            'id', 'customer', 'customer_data', 'job_location', 'crew', 'date', 'day_of_week',
+            'id', 'customer', 'customer_data', 'job_location', 'crew', 'date', 'recurring_end_date', 'day_of_week',
             'frequency', 'total_man_hours', 'job_ordering', 'custom_interval_days', 'last_visit_date',
             'gross_revenue', 'instructions_for_crew', 'files', 'proposal',
             'mow', 'edge', 'blow', 'next_visit_date', 'status', 'job_type'

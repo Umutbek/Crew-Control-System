@@ -34,10 +34,13 @@ class CrewSerializer(serializers.ModelSerializer):
         return user
 
 class CrewMemberSerializer(serializers.ModelSerializer):
+    crew_data = CrewSerializer(source='crew', read_only=True)  # For output
+
     """Serializer for Crew members"""
     class Meta:
         model = models.CrewMember
-        fields = ('id', 'name', 'email', 'phone', 'crew')
+        fields = ('id', 'name', 'email', 'phone', 'crew', 'crew_data')
+        read_only_fields = ('id', 'crew_data')
 
 
 class CrewLoginSerializer(serializers.Serializer):
@@ -87,4 +90,4 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Customers
         fields = ('id', 'fullname', 'email', 'phone', 'business_id', 'address', 'city',
-                  'state', 'zipcode', 'longitude', 'latitude')
+                  'state', 'zipcode', 'longitude', 'latitude', 'status')

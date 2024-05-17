@@ -12,6 +12,8 @@ class Jobs(models.Model):
     job_location = models.CharField(max_length=255, blank=True, null=True)
 
     date = models.DateField(help_text="The first date the job should start (mm/dd/yyyy)")
+    recurring_end_date = models.DateField(help_text="The first date the job should start (mm/dd/yyyy)", blank=True, null=True)
+
     day_of_week = models.CharField(max_length=9, choices=[
         ('Monday', 'Monday'),
         ('Tuesday', 'Tuesday'),
@@ -20,7 +22,7 @@ class Jobs(models.Model):
         ('Friday', 'Friday'),
         ('Saturday', 'Saturday'),
         ('Sunday', 'Sunday')
-    ])
+    ], blank=True, null=True)
     frequency = models.CharField(max_length=10, choices=[
         ('weekly', 'Weekly'),
         ('biweekly', 'Every Two Weeks'),
@@ -28,7 +30,7 @@ class Jobs(models.Model):
         ('quadweekly', 'Quadweekly'),
 
         ('custom', 'Custom')
-    ])
+    ], blank=True, null=True)
     custom_interval_days = models.IntegerField(null=True, blank=True, help_text="Number of days for custom frequency")
     total_man_hours = models.DecimalField(max_digits=5, decimal_places=2)
     job_ordering = models.PositiveIntegerField(help_text="Order of the job in the day's schedule")
