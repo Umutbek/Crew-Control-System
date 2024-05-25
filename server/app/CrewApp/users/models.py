@@ -87,7 +87,7 @@ class Customers(models.Model):
     zipcode = models.IntegerField(default=0)
     longitude = models.FloatField(null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
-    status = models.BooleanField(default=True)
+    status = models.BooleanField(default=False)
 
 
     def clean(self):

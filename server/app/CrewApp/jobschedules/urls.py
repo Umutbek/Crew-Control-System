@@ -6,6 +6,7 @@ app_name = 'jobschedules'
 
 router = DefaultRouter()
 router.register(r'jobs', views.JobsViewSet)
+router.register(r'assignedjobs', views.AssignedJobViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

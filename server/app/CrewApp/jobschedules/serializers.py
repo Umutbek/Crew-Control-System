@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Jobs
+from .models import Jobs, AssignedJob
 from users.serializers import CustomerSerializer
 from users.models import Customers 
 
@@ -20,3 +20,9 @@ class JobsSerializer(serializers.ModelSerializer):
     
     def get_gross_revenue(self, obj):
         return obj.calculate_gross_revenue()
+    
+
+class AssignedJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssignedJob
+        fields = '__all__'

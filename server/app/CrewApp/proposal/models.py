@@ -1,6 +1,8 @@
 from django.db import models
 import decimal
 from users.models import Customers
+from django_fsm import FSMIntegerField
+from proposal import utils
 
 
 class ServiceItem(models.Model):
@@ -14,9 +16,15 @@ class ServiceItem(models.Model):
 
 class Proposal(models.Model):
     customer = models.ForeignKey(Customers, on_delete=models.CASCADE)
+    customer_email = models.EmailField(blank=True, null=True)
+    status = FSMIntegerField(choices=utils.ProposalStatus.choices, default=utils.ProposalStatus.PENDING)
     items = models.ManyToManyField(ServiceItem, through='ProposalItem')
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, help_text="Tax rate as a percentage, e.g., 20 for 20%")
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, help_text="Discount rate as a percentage, e.g., 10 for 10%")
+    send_date = models.DateField(help_text="The proposal send date", null=True)
+    valid_date = models.DateField(help_text="The proposal valid date", null=True)
+    description = models.TextField(blank=True, null=True)
+
 
     def total_price_before_tax(self):
         return sum(item.calculate_price() for item in self.proposalitem_set.all())

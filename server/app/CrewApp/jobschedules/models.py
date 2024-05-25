@@ -74,4 +74,17 @@ class Jobs(models.Model):
         return total_revenue
 
     def __str__(self):
-        return f"Job for {self.customer.name}, starts on {self.date}"
+        return f"Job for {self.customer.fullname}, starts on {self.date}"
+    
+
+class AssignedJob(models.Model):
+    job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
+    crew = models.ForeignKey(Crew, on_delete=models.CASCADE)
+    crew_notes = models.CharField(max_length=255, blank=True, null=True)
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
+    start_hour = models.DateTimeField(blank=True, null=True)
+    end_hour = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.job} assigned to {self.crew}"

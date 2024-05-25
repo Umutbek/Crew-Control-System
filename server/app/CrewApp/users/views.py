@@ -15,6 +15,8 @@ from django.contrib.auth import get_user_model
 import datetime
 from django.contrib import auth
 from rest_framework.renderers import JSONRenderer
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import DateRangeFilter
 
 
 
@@ -54,3 +56,6 @@ class CustomerViewSet(viewsets.ModelViewSet):
     """Manage a customer viewset"""
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customers.objects.all()
+
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = DateRangeFilter
