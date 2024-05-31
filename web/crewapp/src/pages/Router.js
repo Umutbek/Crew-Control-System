@@ -11,6 +11,8 @@ const ManageCrewMembers = lazy(() => import("./manage/ManageCrewMembers"));
 const Reports = lazy(() => import('./reports/Reports')); 
 const Billing = lazy(() => import("./billing/Billing"));
 const CreateOneTimeJob = lazy(() => import("../components/jobs/CreateOneTimeJob"));
+const ListProposal = lazy(() => import("./proposal/ListProposal"));
+
 
 export default function Router() {
   return (
@@ -46,6 +48,12 @@ export default function Router() {
         <Route path="/reports" element={
           <PrivateRoute>
             <Reports />
+          </PrivateRoute>
+        } />
+
+        <Route path="/proposal" element={
+          <PrivateRoute>
+            <ListProposal />
           </PrivateRoute>
         } />
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, DialogActions, DialogContent, DialogTitle, Dialog } from '@mui/material';
 import { styled } from '@mui/system';
+const _baseApi = process.env.REACT_APP_BASE_API;
+
 
 const StyledInputLabel = styled(TextField)({
     backgroundColor: 'white',
@@ -50,7 +52,7 @@ const CreateCrews = ({ onClose }) => {
     }
     const { confirmPassword, ...submitData } = formState; // Exclude confirmPassword from the data sent to the backend
     try {
-      const response = await axios.post('http://akjol.localhost:8000/api/v1/users/crew/', submitData);
+      const response = await axios.post(`${_baseApi}/users/crew/`, submitData);
       console.log('Crew created:', response.data);
       onClose(); // Close the modal after submission
     } catch (error) {

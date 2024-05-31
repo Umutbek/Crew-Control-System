@@ -10,7 +10,7 @@ import {
   } from "../types/authTypes"
   import {ERRORS} from "../../constants/errors"
   
-  const _baseApi = process.env.REACT_APP_BASE_API;
+  const _baseApi = process.env.REACT_APP_BASE_API1;
 
   export const loadUser = () => async (dispatch, getState) => {
     dispatch(userLoading())

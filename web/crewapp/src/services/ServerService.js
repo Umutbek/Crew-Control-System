@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getToken } from "../helpers/store";
 import { format } from 'date-fns';
 
-const _baseApi = 'http://akjol.localhost:8000';
+const _baseApi = process.env.REACT_APP_BASE_API;
 
 class ServerService {
   static async getJobs(start, end, crew) {
@@ -13,7 +13,7 @@ class ServerService {
     const endDate = format(end, 'yyyy-MM-dd');
 
 
-    const url = `${_baseApi}/api/v1/schedules/jobs/?start_date=${startDate}&end_date=${endDate}&crew=${crew}`;
+    const url = `${_baseApi}/schedules/jobs/?start_date=${startDate}&end_date=${endDate}&crew=${crew}`;
 
     console.log("Crew", crew)
 
@@ -37,7 +37,7 @@ class ServerService {
 
   static async fetchCrews() {
     
-    const url = `${_baseApi}/api/v1/users/crew/`;
+    const url = `${_baseApi}/users/crew/`;
 
     try {
       const response = await axios.get(url, {

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, DialogActions, DialogContent, DialogTitle, Dialog, FormControlLabel, Checkbox, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { styled } from '@mui/system';
+const _baseApi = process.env.REACT_APP_BASE_API;
+
 
 const StyledInputLabel = styled(InputLabel)({
     backgroundColor: 'white',
@@ -17,6 +19,7 @@ const CreateOneTimeJob = ({ onClose }) => {
     date: '',
     total_man_hours: '',
     instructions_for_crew: '',
+    job_ordering: 1,
     mow: false,
     edge: false,
     blow: false
@@ -28,8 +31,8 @@ const CreateOneTimeJob = ({ onClose }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const customersResponse = await axios.get('http://akjol.localhost:8000/api/v1/users/customer');
-        const crewsResponse = await axios.get('http://akjol.localhost:8000/api/v1/users/crew');
+        const customersResponse = await axios.get(`${_baseApi}/users/customer/?status=True`);
+        const crewsResponse = await axios.get(`${_baseApi}/users/crew`);
         setCustomers(customersResponse.data);
         setCrews(crewsResponse.data);
       } catch (error) {
@@ -50,7 +53,7 @@ const CreateOneTimeJob = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://akjol.localhost:8000/api/v1/schedules/jobs/', formState);
+      const response = await axios.post(`${_baseApi}/schedules/jobs/`, formState);
       console.log('Job created:', response.data);
       onClose(); // Close the modal after submission
     } catch (error) {

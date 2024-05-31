@@ -1,6 +1,6 @@
+// src/components/Navbar.js
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useNavigate } from 'react-router-dom';
@@ -39,8 +39,9 @@ const Navbar = () => {
           color="inherit"
           aria-label="menu"
           sx={{ mr: 2 }}
+          onClick={() => handleNavigation('/mainscheduling')}
         >
-          <MenuIcon />
+          <img src="/logo.png" alt="Logo" style={{ height: '60px', width: 'auto' }} />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ marginRight: 4 }}>
           GreenCrew
@@ -61,6 +62,7 @@ const Navbar = () => {
           <MenuItem onClick={() => handleManageNavigation('/manage-customers')}>Customers</MenuItem>
         </Menu>
         <Button color="inherit" onClick={() => handleNavigation('/reports')}>Reports</Button>
+        <Button color="inherit" onClick={() => handleNavigation('/proposal')}>Proposal</Button>
         <Button color="inherit" onClick={() => handleNavigation('/billing')}>Billing</Button>
         <div style={{ flexGrow: 1 }} />
         <IconButton

@@ -15,7 +15,7 @@ const ManageCrewMembers = () => {
   useEffect(() => {
     const fetchCrewMembers = async () => {
       try {
-        const response = await axios.get('http://akjol.localhost:8000/api/v1/users/crewmember');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_API}/users/crewmember`);
         setCrewMembers(response.data);
       } catch (error) {
         console.error('Error fetching crew members:', error);

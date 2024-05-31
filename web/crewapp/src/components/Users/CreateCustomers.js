@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, DialogActions, DialogContent, DialogTitle, Dialog } from '@mui/material';
+const _baseApi = process.env.REACT_APP_BASE_API;
+const _googleApi = process.env.REACT_APP_GOOGLE_API_KEY;
+
 
 const CreateCustomers = ({ onClose }) => {
   const [formState, setFormState] = useState({
@@ -29,24 +32,20 @@ const CreateCustomers = ({ onClose }) => {
     }));
   };
 
+
   const handleGeocode = async () => {
     const { address, city, state, zipcode } = formState;
     const fullAddress = `${address}, ${city}, ${state} ${zipcode}`;
-    const apiKey = `AIzaSyCZMfzFN-Zp4rnIfX7Po2xaqHNvEsBtOfA`;
     
+    console.log("Google API", _googleApi)
+
     try {
       const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json`, {
         params: {
           address: fullAddress,
-          key: apiKey
+          key: _googleApi
         }
       });
-
-      console.log("Key", apiKey)
-      console.log("Full address", fullAddress)
-      console.log("Status", response.data.status)
-      console.log("Response", response.data)
-
 
       if (response.data.status === 'OK') {
         const location = response.data.results[0].geometry.location;
@@ -78,7 +77,7 @@ const CreateCustomers = ({ onClose }) => {
     
     const { longitude, latitude, ...submitData } = formState;
     try {
-      const response = await axios.post('http://akjol.localhost:8000/api/v1/users/customer/', {
+      const response = await axios.post(`${_baseApi}/users/customer/`, {
         ...submitData,
         longitude: formState.longitude,
         latitude: formState.latitude
@@ -207,3 +206,4 @@ const CreateCustomers = ({ onClose }) => {
 };
 
 export default CreateCustomers;
+

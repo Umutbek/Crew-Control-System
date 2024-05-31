@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, DialogActions, DialogContent, DialogTitle, Dialog, FormControlLabel, Checkbox, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { styled } from '@mui/system';
+const _baseApi = process.env.REACT_APP_BASE_API;
+
 
 const StyledInputLabel = styled(InputLabel)({
     backgroundColor: 'white',
@@ -22,7 +24,7 @@ const CreateCrewMembers = ({ onClose }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const crewResponse = await axios.get('http://akjol.localhost:8000/api/v1/users/crew/');
+        const crewResponse = await axios.get(`${_baseApi}/users/crew/`);
         setCrew(crewResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -42,7 +44,7 @@ const CreateCrewMembers = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://akjol.localhost:8000/api/v1/users/crewmember/', formState);
+      const response = await axios.post(`${_baseApi}/users/crewmember/`, formState);
       console.log('Crew member Created:', response.data);
       onClose(); // Close the modal after submission
     } catch (error) {

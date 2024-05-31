@@ -11,11 +11,13 @@ const ManageCrews = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateCrewOpen, setIsCreateCrewJobOpen] = useState(false);
 
+  console.log("ENV", process.env.REACT_APP_BASE_API)
+
 
   useEffect(() => {
     const fetchCrews = async () => {
       try {
-        const response = await axios.get('http://akjol.localhost:8000/api/v1/users/crew');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_API}/users/crew`);
         setCrews(response.data);
       } catch (error) {
         console.error('Error fetching crews:', error);
