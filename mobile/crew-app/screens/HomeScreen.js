@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert, Image } from 'react-native';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
+import {BACKEND_URL} from '@env'
 
 // Function to get today's date and day of the week
 const getTodayInfo = () => {
@@ -18,9 +19,13 @@ const HomeScreen = ({ navigation, route }) => {
   const { crewId, crewName } = route.params; // Get crewId and crewName from route params
   const [dateInfo, setDateInfo] = useState(getTodayInfo());
 
+  console.log("Date", dateInfo.date)
+  console.log("Crew", crewId)
+
+
   const fetchJobs = async () => {
     try {
-      const response = await axios.get(`http://10.0.0.32:8000/api/v1/schedules/jobs/?date=${dateInfo.date}&crew=${crewId}`);
+      const response = await axios.get(`${BACKEND_URL}/schedules/jobs/?date=${dateInfo.date}&crew=${crewId}`);
       setJobs(response.data);
     } catch (error) {
       console.error(error);
@@ -62,18 +67,19 @@ const HomeScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
         <Text style={styles.title}>{crewName}</Text>
         <Text style={styles.subtitle}>{`${dateInfo.day} - ${dateInfo.date}`}</Text>
       </View>
 
-      {/* <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.clockButton} onPress={() => {}}>
           <Text style={styles.clockButtonText}>Clock In</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.clockButton, styles.clockOutButton]} onPress={() => {}}>
           <Text style={[styles.clockButtonText, styles.clockOutButtonText]}>Clock Out</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
 
       <FlatList
         data={jobs}
@@ -90,6 +96,10 @@ const HomeScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         )}
       />
+
+      <TouchableOpacity style={styles.assistantButton} onPress={() => navigation.navigate('Chatbot')}>
+        <Image source={require('../assets/chatbot-logo.png')} style={styles.assistantLogo} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -167,6 +177,23 @@ const styles = StyleSheet.create({
   jobStatus: {
     marginTop: 8,
     fontSize: 18,
+  },
+  assistantButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  assistantLogo: {
+    width: 50,
+    height: 50,
   },
 });
 

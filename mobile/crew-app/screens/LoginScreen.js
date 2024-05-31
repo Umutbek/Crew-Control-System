@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BACKEND_URL} from '@env'
 
 // Replace with your local machine's IP address and correct port
-const BASE_URL = 'http://10.0.0.32:8000/api/v1/users/crew_login/';
+// const BASE_URL = 'http://10.0.0.32:8000/api/v1/users/crew_login/';
+
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -14,10 +16,10 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     console.log('Email:', email);
     console.log('Password:', password);
-    console.log('Base URL:', BASE_URL);
+    console.log('Base URL:', BACKEND_URL);
 
     try {
-      const response = await axios.post(BASE_URL, {
+      const response = await axios.post(`${BACKEND_URL}/users/crew_login/`, {
         email,
         password,
       });

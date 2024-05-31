@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, Linking } from 'react-native';
 import axios from 'axios';
+import {BACKEND_URL} from '@env'
 
 const JobDetailScreen = ({ route, navigation }) => {
   const { jobId, crewId } = route.params;
@@ -25,7 +26,7 @@ const JobDetailScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const response = await axios.get(`http://10.0.0.32:8000/api/v1/schedules/jobs/${jobId}/`);
+        const response = await axios.get(`${BACKEND_URL}/schedules/jobs/${jobId}/`);
         const job = response.data;
         setJobDetails(job);
         const initialState = {
@@ -37,7 +38,7 @@ const JobDetailScreen = ({ route, navigation }) => {
         setChecklist(initialState);
 
         if (job.status === 4) {
-          const assignedJobResponse = await axios.get(`http://10.0.0.32:8000/api/v1/schedules/assignedjobs/?job=${jobId}&crew=${crewId}`);
+          const assignedJobResponse = await axios.get(`${BACKEND_URL}/schedules/assignedjobs/?job=${jobId}&crew=${crewId}`);
           const assignedJob = assignedJobResponse.data[0]; // assuming only one assigned job per jobId and crewId
           setAssignedJobId(assignedJob.id);
           setStartHour(new Date(assignedJob.start_hour));
@@ -64,7 +65,7 @@ const JobDetailScreen = ({ route, navigation }) => {
     setIsStarted(true);
 
     try {
-      const response = await axios.post('http://10.0.0.32:8000/api/v1/schedules/assignedjobs/', {
+      const response = await axios.post(`${BACKEND_URL}/schedules/assignedjobs/`, {
         job: jobId,
         crew: crewId,
         start_hour: startTime,
@@ -76,7 +77,7 @@ const JobDetailScreen = ({ route, navigation }) => {
       setAssignedJobId(response.data.id); // Update assignedJobId from the response
 
       // Update job status to 'In Progress'
-      await axios.patch(`http://10.0.0.32:8000/api/v1/schedules/jobs/${jobId}/`, {
+      await axios.patch(`${BACKEND_URL}/schedules/jobs/${jobId}/`, {
         status: 3, // In Progress
       });
 
@@ -92,7 +93,7 @@ const JobDetailScreen = ({ route, navigation }) => {
     setEndHour(endTime);
 
     try {
-      await axios.patch(`http://10.0.0.32:8000/api/v1/schedules/assignedjobs/${assignedJobId}/`, {
+      await axios.patch(`${BACKEND_URL}/schedules/assignedjobs/${assignedJobId}/`, {
         end_hour: endTime,
         crew_notes: crewNotes,
         mow: checklist.mow,
@@ -102,7 +103,7 @@ const JobDetailScreen = ({ route, navigation }) => {
       });
 
       // Update job status to 'Done'
-      await axios.patch(`http://10.0.0.32:8000/api/v1/schedules/jobs/${jobId}/`, {
+      await axios.patch(`${BACKEND_URL}/schedules/jobs/${jobId}/`, {
         status: 4, // Done
       });
 
