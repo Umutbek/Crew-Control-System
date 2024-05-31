@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .models import Jobs, AssignedJob
 from .serializers import JobsSerializer, AssignedJobSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import DateRangeFilter
+from .filters import DateRangeFilter, AssignedJobFilter
 
 
 class JobsViewSet(viewsets.ModelViewSet):
@@ -23,3 +23,5 @@ class JobsViewSet(viewsets.ModelViewSet):
 class AssignedJobViewSet(viewsets.ModelViewSet):
     queryset = AssignedJob.objects.all()
     serializer_class = AssignedJobSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = AssignedJobFilter

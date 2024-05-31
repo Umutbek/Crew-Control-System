@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Jobs, AssignedJob
-from users.serializers import CustomerSerializer
+from users.serializers import CustomerSerializer, CrewSerializer
 from users.models import Customers 
 
 
@@ -23,6 +23,13 @@ class JobsSerializer(serializers.ModelSerializer):
     
 
 class AssignedJobSerializer(serializers.ModelSerializer):
+    job_data = JobsSerializer(source='job', read_only=True)  # For output
+    crew_data = CrewSerializer(source='crew', read_only=True)
     class Meta:
         model = AssignedJob
-        fields = '__all__'
+        fields = (
+            'id', 'crew_notes', 'start_hour', 'end_hour', 'mow', 'edge', 'blow', 'job', 'crew', 'total_hours', 
+            'job_data', 'crew_data'
+            )
+        
+        read_only_fields = ('id', 'total_hours')

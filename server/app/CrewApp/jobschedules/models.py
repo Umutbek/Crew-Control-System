@@ -86,5 +86,16 @@ class AssignedJob(models.Model):
     end_hour = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=False)
 
+    mow = models.BooleanField(default=False)
+    edge = models.BooleanField(default=False)
+    blow = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.job} assigned to {self.crew}"
+    
+    def total_hours(self):
+        if self.start_hour and self.end_hour:
+            time_diff = self.end_hour - self.start_hour
+            total_hours = time_diff.total_seconds() / 3600  # convert seconds to hours
+            return round(total_hours, 2)  # rounding to 2 decimal places
+        return 0
